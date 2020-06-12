@@ -1,0 +1,53 @@
+version: '3.1'
+
+services:
+    naviserver:
+        image: sussdorff/project-open
+        volumes:
+            - content:/var/www/openacs/content-repository-content-files
+            - filestorage:/var/www/openacs/filestorage
+            # Add more path for developing in packages
+            # - ./packages/webix-portal:/var/www/openacs/packages/webix-portal:cached
+            # - ./packages/intranet-rest:/var/www/openacs/packages/intranet-rest:cached -- This one is for overwriting
+        depends_on: 
+            - postgres
+        ports: 
+            - 8081:8000
+        secrets:
+            - psql_password
+            - psql_user
+            - config_vars
+
+    postgres:
+        image: postgres:9
+        secrets:
+            - psql_password
+            - psql_user
+        environment:
+            POSTGRES_PASSWORD_FILE: /run/secrets/psql_password
+            POSTGRES_USER_FILE: /run/secrets/psql_user
+            POSTGRES_DB: openacs
+        ports: 
+            - 5432:5432
+        volumes:
+            - data:/var/lib/postgresql/data
+            - ./database:/docker-entrypoint-initdb.d
+
+    unoserver:
+        image: alphakevin/unoconv-server
+
+volumes:
+    data:
+    content:
+    filestorage:
+    
+        
+secrets:
+    psql_user:
+        file: ./psql_user.txt
+    psql_password:
+        file: ./psql_password.txt
+    # config_vars contain the variables needed for the naviserver
+    # These are like debug level etc.
+    config_vars:
+        file: ./config_vars.tcl
