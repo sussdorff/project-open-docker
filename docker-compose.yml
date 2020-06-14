@@ -2,7 +2,7 @@ version: '3.1'
 
 services:
     naviserver:
-        image: sussdorff/project-open
+        image: sussdorff/project-open:oacs-5-10
         volumes:
             - content:/var/www/openacs/content-repository-content-files
             - filestorage:/var/www/openacs/filestorage
@@ -12,7 +12,7 @@ services:
         depends_on: 
             - postgres
         ports: 
-            - 8081:8000
+            - 8080:8000
         secrets:
             - psql_password
             - psql_user
@@ -32,9 +32,6 @@ services:
         volumes:
             - data:/var/lib/postgresql/data
             - ./database:/docker-entrypoint-initdb.d
-
-    unoserver:
-        image: alphakevin/unoconv-server
 
 volumes:
     data:
